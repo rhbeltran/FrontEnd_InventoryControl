@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import './TopBar.css';
+import './NavBar.css';
 
-const TopBar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const NavBar = () => {
+    const [isOpen, setIsOpen] = useState(false);
     return (
         <div className="navbar">
             <div className='nav_logo'> MOTORSOLUTIONS </div>
@@ -22,4 +22,4 @@ const TopBar = () => {
     );
 }
 
-export default TopBar;
+export default NavBar
