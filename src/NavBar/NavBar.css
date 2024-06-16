@@ -1,10 +1,10 @@
 .navbar {
-    background: gray;
-    height: 60px;
+    background: white;
+    height: 65px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+    box-shadow: 0 0 16px rgba(0, 0, 0, 0.15);
 }
 
 .nav_logo {
@@ -16,7 +16,7 @@
 
 .nav_items {
     margin: 15px;
-    color: white;
+    color: black;
     position: relative;
     text-decoration: none;
 }
@@ -37,6 +37,7 @@
         height: -webkit-fill-available;
         transform: translateX(-100%);
         transition: 0.3s ease all;
+        
        
     }
     .nav_items.open {

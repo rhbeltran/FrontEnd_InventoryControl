@@ -13,6 +13,9 @@ const TopBar = () => {
                 <a href="#">CLIENTES</a>
                 <a href="#">PROVEEDORES</a>
             </div>
+            <div className={`nav_items ${isOpen && "open"}`}>
+                <a href="#">Cerrar Sesión</a>
+            </div>
             <div className={`nav_toggle ${isOpen && "open"}`} onClick={() => setIsOpen(!isOpen)}>
                 <span></span>
                 <span></span>
