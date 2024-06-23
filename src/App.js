@@ -1,6 +1,6 @@
 import React from 'react';
 import Home from './pages/Home';
-import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import NavBar from './NavBar/NavBar';
 import Products from './pages/Products';
 import Clients from './pages/Clients';
@@ -9,11 +9,16 @@ import Users from './pages/Users';
 import TypeOfProducts from './pages/TypeOfProducts';
 import Login from './pages/Login';
 import ProtectedRoute from './context/ProtectedRoute';
+import MaybeShowNavBar from './components/MaybeShowNavbar';
+
 
 function App() {
   return (
+   <> 
     <Router>
-      <NavBar/>
+      <MaybeShowNavBar>
+        <NavBar />
+      </MaybeShowNavBar>
       <div id="pageContainer" className="p-3">
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -23,11 +28,12 @@ function App() {
           <Route path="/clients" element={<ProtectedRoute element={Clients} />} />
           <Route path="/suppliers" element={<ProtectedRoute element={Suppliers} />} />
           <Route path="/users" element={<ProtectedRoute element={Users} />} />
-          <Route path = "*" element={<Navigate to="/home"></Navigate> }></Route>
+          <Route path="*" element={<Navigate to="/home"></Navigate>}></Route>
         </Routes>
       </div>
     </Router>
+    </>
   );
-};
+}
 
 export default App;
