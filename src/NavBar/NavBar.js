@@ -4,15 +4,21 @@ import { NavLink, Link } from 'react-router-dom';
 
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import Button from 'react-bootstrap/Button';
+//import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import SplitButton from 'react-bootstrap/SplitButton';
-import Dropdown from "../components/Dropdown/Dropdown";
-import { ButtonGroup } from "react-bootstrap";
+//import SplitButton from 'react-bootstrap/SplitButton';
+//import Dropdown from "../components/Dropdown/Dropdown";
+//import { ButtonGroup } from "react-bootstrap";
 
 const NavBar = () => {
     const [isOpen, setIsOpen] = useState(false);
+
+    const logout = () => {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+    }
+
     return (
         <Navbar expand="lg" className="bg-body-tertiary">
             <Container>
@@ -33,8 +39,9 @@ const NavBar = () => {
                             title="Opciones"
                         >
                             <NavDropdown.Divider />
-                            <NavDropdown.Item href="#action/3.4">
+                            <NavDropdown.Item href="#action/3.4" onClick={logout}>
                                 Cerrar Sesión
+                            
                             </NavDropdown.Item>
                         </NavDropdown>
                     </Nav>

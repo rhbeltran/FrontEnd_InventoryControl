@@ -21,6 +21,7 @@ function App() {
       </MaybeShowNavBar>
       <div id="pageContainer" className="p-3">
         <Routes>
+          <Route path="/" element={<Navigate to="/login"></Navigate>}></Route>
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<ProtectedRoute element={Home} />} />
           <Route path="/typeofproducts" element={<ProtectedRoute element={TypeOfProducts} />} />
