@@ -3,8 +3,11 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useState } from 'react';
 import { Spinner } from 'react-bootstrap';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import Swal from 'sweetalert2';
 
-function EditSupplier({ show, onHide, editData, handleChange, handleSave}) {
+function EditSupplier({ show, onHide, editData, handleChange, handleSave }) {
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -16,7 +19,15 @@ function EditSupplier({ show, onHide, editData, handleChange, handleSave}) {
     }
     setValidated(false);
     setLoading(true);
-    handleSave();
+    try {
+      handleSave();
+    } catch (error) {
+      Swal.fire(
+        '¡Error!',
+        error.response.data.message,
+        'error'
+      );
+    }
     setLoading(false);
   };
 
@@ -26,25 +37,18 @@ function EditSupplier({ show, onHide, editData, handleChange, handleSave}) {
       style={{ display: 'block', position: 'initial' }}
     >
       <Modal show={show} onHide={onHide}>
-        
+
         <Modal.Header closeButton>
           <Modal.Title>Editar Proveedor</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form id="ditForm" noValidate validated={validated}>
-            <Form.Group className="mb-3" controlId="formFirstName">
+            <Form.Group className="mb-3" controlId="formName">
               <Form.Label>Nombre</Form.Label>
-              <Form.Control type="text" placeholder="Nombre" name="firstname" value={editData.firstname || ''} onChange={handleChange} autoFocus required />
+              <Form.Control type="text" placeholder="Nombre" name="name" value={editData.name || ''} onChange={handleChange} autoFocus required />
               <Form.Control.Feedback type="invalid">
                 Por favor ingresa un Nombre.
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formLastName">
-              <Form.Label>Apellido</Form.Label>
-              <Form.Control type="text" placeholder="Apellido" name="lastname" value={editData.lastname} onChange={handleChange} required />
-              <Form.Control.Feedback type="invalid">
-                Por favor ingresa un Apellido.
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formAddress">
@@ -72,15 +76,21 @@ function EditSupplier({ show, onHide, editData, handleChange, handleSave}) {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>Close</Button>
-          <Button variant="primary" onClick={handleSaveChanges} >Save changes</Button>
+          <Button variant="secondary" onClick={onHide}>
+            <FontAwesomeIcon className="me-1" icon={faTimes} />
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleSaveChanges} >
+            <FontAwesomeIcon className="me-1" icon={faSave} />
+            Save changes
+          </Button>
         </Modal.Footer>
       </Modal>
       {loading && (
         <div className="loading">
-        <Spinner animation="border" role="status" size="lg">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
+          <Spinner animation="border" role="status" size="lg">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
         </div>
       )}
     </div>

@@ -1,5 +1,6 @@
 import { React, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const urlLogin = process.env.REACT_APP_API_URL + '/login';
 
@@ -9,14 +10,23 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const handleLogin = async (e) => {
     e.preventDefault();
-    const responseApi = await axios.post(urlLogin, { username, password });
-    if (responseApi.data.token !== undefined) {
-      localStorage.setItem('token', responseApi.data.token);
-      localStorage.setItem('firstName', responseApi.data.firstName);
-      localStorage.setItem('lastName', responseApi.data.lastName);
-      window.location.href = '/home';
+    try {
+      const responseApi = await axios.post(urlLogin, { username, password });
+
+      if (responseApi.data.token !== undefined || responseApi.data.token !== null) {
+        localStorage.setItem('token', responseApi.data.token);
+        localStorage.setItem('userName', responseApi.data.userName);
+        window.location.href = '/home';
+      }
+      return responseApi.data;
+    } catch (error) {
+      console.log(error);
+      Swal.fire(
+        '¡Error!',
+        error.response.data.message,
+        'error'
+      );
     }
-    return responseApi.data;
   };
 
 
@@ -47,25 +57,13 @@ const Login = () => {
         />
       </div>
       <div className="mb-3">
-        <div className="custom-control custom-checkbox">
-          <input
-            type="checkbox"
-            className="custom-control-input"
-            id="customCheck1"
-          />
-          <label className="custom-control-label" htmlFor="customCheck1">
-            Remember me
-          </label>
-        </div>
       </div>
       <div className="d-grid">
         <button type="submit" className="btn btn-primary" >
           Submit
         </button>
       </div>
-      <p className="forgot-password text-right">
-        Forgot <a href="#">password?</a>
-      </p>
+      
     </form>
   )
 };

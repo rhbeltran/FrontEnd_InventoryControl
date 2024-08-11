@@ -12,6 +12,9 @@ const TopBar = () => {
                 <a href="#">PRODUCTOS</a>
                 <a href="#">CLIENTES</a>
                 <a href="#">PROVEEDORES</a>
+                <a href="#">VENTAS</a>
+                <a href="#">COMPRAS</a>
+                <a href="#">INVENTARIO</a>
             </div>
             <div className={`nav_items ${isOpen && "open"}`}>
                 <a href="#">Cerrar Sesión</a>

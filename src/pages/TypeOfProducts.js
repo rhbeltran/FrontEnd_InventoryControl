@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import EditTypeOfProduct from "../components/EditTypeOfProduct";
 import { Spinner } from "react-bootstrap";
 import apiClient from "../helpers/jwtInterceptor";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const urlTypeOfProducts = process.env.REACT_APP_API_URL + '/typesOfProducts';
 const TypeOfProducts = () => {
@@ -26,16 +28,26 @@ const TypeOfProducts = () => {
   const onDelete = (id) => {
     setLoading([...loading, id]);
     const deleteTypeOfProduct = async () => {
-      const responseApi = await apiClient.delete(`${urlTypeOfProducts}/${id}`);
-      if (responseApi.data.typesOfProducts) {
-        setLoading(loading.filter((item) => item !== id));
-        setTypeOfProducts(typesOfProducts.filter((item) => item.id !== id));
+      try {
+        const responseApi = await apiClient.delete(`${urlTypeOfProducts}/${id}`);
+        if (responseApi.data.typesOfProducts) {
+          setTypeOfProducts(typesOfProducts.filter((item) => item.id !== id));
+          Swal.fire(
+            '¡Eliminado!',
+            'El tipo de producto ha sido eliminado.',
+            'success'
+          )
+        }
+      } catch (error) {
+        console.log(error);
         Swal.fire(
-          '¡Eliminado!',
-          'El tipo de producto ha sido eliminado.',
-          'success'
-        )
+          '¡Error!',
+          error.response.data.message,
+          'error'
+        );
+        setLoading(loading.filter((item) => item !== id));
       }
+
     }
     Swal.fire({
       title: '¿Estás seguro de eliminar el tipo de producto?',
@@ -49,7 +61,7 @@ const TypeOfProducts = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         deleteTypeOfProduct();
-      }else{
+      } else {
         setLoading(loading.filter((item) => item !== id));
       }
     })
@@ -63,7 +75,7 @@ const TypeOfProducts = () => {
     }
     setShowModal(true);
   }
-  const handleSave = async () => new Promise(async (resolve, reject) =>{
+  const handleSave = async () => new Promise(async (resolve, reject) => {
     let typeOfProductsExists = typesOfProducts.find((item) => item.id === editData.id);
     if (typeOfProductsExists) {
       apiClient.put(`${urlTypeOfProducts}/${editData.id}`, editData)
@@ -117,6 +129,7 @@ const TypeOfProducts = () => {
       </div>
       <div className="col-xl-12 mb-4">
         <Button variant="primary" onClick={() => handleEdit('')}>
+          <FontAwesomeIcon className="me-1" icon={faPlus} />
           Agregar Nuevo Tipo de Producto
         </Button>
       </div>
@@ -135,9 +148,16 @@ const TypeOfProducts = () => {
                 <td>{typesOfProduct.nametype}</td>
                 <td>{typesOfProduct.description}</td>
                 <td>
-                  <Button variant="warning" className="me-2" onClick={() => handleEdit(typesOfProduct.id)}>Editar</Button>
+                  <Button variant="warning" className="me-2" onClick={() => handleEdit(typesOfProduct.id)}>
+                    <FontAwesomeIcon className="me-1" icon={faEdit} />
+                    Editar
+                  </Button>
                   <Button variant="danger" onClick={() => onDelete(typesOfProduct.id)}>
-                    {loading.includes(typesOfProduct.id) ? <><Spinner animation="border" size="sm" role="status" />Eliminando...</> : 'Eliminar'}
+                    {loading.includes(typesOfProduct.id) ? (
+                      <><Spinner className="me-1" animation="border" size="sm" role="status" />Eliminando...</>
+                    ) : (
+                      <><FontAwesomeIcon className="me-1" icon={faTrashCan} />Eliminar</>
+                    )}
                   </Button>
                 </td>
               </tr>

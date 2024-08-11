@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import EditProduct from "../components/EditProduct";
 import { Spinner } from "react-bootstrap";
 import apiClient from "../helpers/jwtInterceptor";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const urlProducts = '/products';
 const Products = () => {
@@ -26,15 +28,24 @@ const Products = () => {
   const onDelete = (id) => {
     setLoading([...loading, id]);
     const deleteProduct = async () => {
-      const responseApi = await apiClient.delete(`${urlProducts}/${id}`);
-      if (responseApi.data.products) {
-        setLoading(loading.filter((item) => item !== id));
-        setProducts(products.filter((item) => item.id !== id));
+      try {
+        const responseApi = await apiClient.delete(`${urlProducts}/${id}`);
+        if (responseApi.data.products) {
+          setProducts(products.filter((item) => item.id !== id));
+          Swal.fire(
+            '¡Eliminado!',
+            'El Producto ha sido eliminado.',
+            'success'
+          )
+        }
+      } catch (error) {
+        console.log(error);
         Swal.fire(
-          '¡Eliminado!',
-          'El Producto ha sido eliminado.',
-          'success'
-        )
+          '¡Error!',
+          error.response.data.message,
+          'error'
+        );
+        setLoading(loading.filter((item) => item !== id));
       }
     }
     Swal.fire({
@@ -120,6 +131,7 @@ const Products = () => {
       </div>
       <div className="col-xl-12 mb-4">
         <Button variant="primary" onClick={() => handleEdit('')}>
+          <FontAwesomeIcon className="me-1" icon={faPlus} />
           Agregar Nuevo Producto
         </Button>
       </div>
@@ -130,7 +142,7 @@ const Products = () => {
               <th>Nombre</th>
               <th>Precio</th>
               <th>Descripción</th>
-              <th>Stock</th>
+              <th>Unidad de Medida</th>
               <th>Tipo de producto</th>
               <th>Actions</th>
             </tr>
@@ -141,12 +153,19 @@ const Products = () => {
                 <td>{product.name}</td>
                 <td>{product.price}</td>
                 <td>{product.description}</td>
-                <td>{product.stock}</td>
+                <td>{product.unitmeasurement}</td>
                 <td>{product.idtypeofproduct}</td>
                 <td>
-                  <Button variant="warning" className="me-2" onClick={() => handleEdit(product.id)}>Editar</Button>
+                  <Button variant="warning" className="me-2" onClick={() => handleEdit(product.id)}>
+                    <FontAwesomeIcon className="me-1" icon={faEdit} />
+                    Editar
+                  </Button>
                   <Button variant="danger" onClick={() => onDelete(product.id)}>
-                    {loading.includes(product.id) ? <><Spinner animation="border" size="sm" role="status" />Eliminando...</> : 'Eliminar'}
+                    {loading.includes(product.id) ? (
+                      <><Spinner className="me-1" animation="border" size="sm" role="status" />Eliminando...</>
+                    ) : (
+                      <><FontAwesomeIcon className="me-1" icon={faTrashCan} />Eliminar</>
+                    )}
                   </Button>
                 </td>
               </tr>

@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import EditUser from "../components/EditUser";
 import { Spinner } from "react-bootstrap";
 import apiClient from "../helpers/jwtInterceptor";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan, faUserPlus, faUserPen, } from "@fortawesome/free-solid-svg-icons";
 
 
 const urlUsers = process.env.REACT_APP_API_URL + '/users';
@@ -28,16 +30,26 @@ const Users = () => {
   const onDelete = (id) => {
     setLoading([...loading, id]);
     const deleteUsers = async () => {
-      const responseApi = await apiClient.delete(`${urlUsers}/${id}`);
-      if (responseApi.data.users) {
-        setLoading(loading.filter((item) => item !== id));
-        setUsers(users.filter((item) => item.id !== id));
+      try {
+        const responseApi = await apiClient.delete(`${urlUsers}/${id}`);
+        if (responseApi.data.users) {
+          setUsers(users.filter((item) => item.id !== id));
+          Swal.fire(
+            '¡Eliminado!',
+            'El usuario ha sido eliminado.',
+            'success'
+          )
+        }
+      } catch (error) {
+        console.log(error);
         Swal.fire(
-          '¡Eliminado!',
-          'El usuario ha sido eliminado.',
-          'success'
-        )
+          '¡Error!',
+          error.response.data.message,
+          'error'
+        );
+        setLoading(loading.filter((item) => item !== id));
       }
+
     }
     Swal.fire({
       title: '¿Estás seguro de eliminar el usuario?',
@@ -51,7 +63,7 @@ const Users = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         deleteUsers();
-      }else{
+      } else {
         setLoading(loading.filter((item) => item !== id));
       }
     })
@@ -66,7 +78,7 @@ const Users = () => {
     setShowModal(true);
   }
 
-  const handleSave = async () => new Promise(async (resolve, reject) =>{
+  const handleSave = async () => new Promise(async (resolve, reject) => {
     let userExists = users.find((item) => item.id === editData.id);
     if (userExists) {
       apiClient.put(`${urlUsers}/${editData.id}`, editData)
@@ -121,6 +133,7 @@ const Users = () => {
       </div>
       <div className="col-xl-12 mb-4">
         <Button variant="primary" onClick={() => handleEdit('')}>
+          <FontAwesomeIcon className="me-1" icon={faUserPlus} />
           Agregar Nuevo Usuario
         </Button>
       </div>
@@ -128,30 +141,39 @@ const Users = () => {
         <Table hover responsive="sm">
           <thead>
             <tr>
+              <th>Usuario</th>
               <th>Nombre</th>
               <th>Apellido</th>
               <th>Género</th>
               <th>Dirección</th>
               <th>Teléfono</th>
               <th>Correo</th>
-              <th>Usuario</th>
+              <th>Rol</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
               <tr key={user.id}>
+                <td>{user.username}</td>
                 <td>{user.firstname}</td>
                 <td>{user.lastname}</td>
                 <td>{user.gender}</td>
                 <td>{user.address}</td>
                 <td>{user.phone}</td>
                 <td>{user.email}</td>
-                <td>{user.username}</td>
+                <td>{user.role}</td>
                 <td>
-                  <Button variant="warning" className="me-2" onClick={() => handleEdit(user.id)}>Editar</Button>
+                  <Button variant="warning" className="me-2" onClick={() => handleEdit(user.id)}>
+                    <FontAwesomeIcon className="me-1" icon={faUserPen} />
+                    Editar
+                  </Button>
                   <Button variant="danger" onClick={() => onDelete(user.id)}>
-                  {loading.includes(user.id)?<><Spinner animation="border" size="sm" role="status"/>Eliminando...</>:'Eliminar'}  
+                    {loading.includes(user.id) ? (
+                      <><Spinner className="me-1" animation="border" size="sm" role="status" />Eliminando...</>
+                    ) : (
+                      <><FontAwesomeIcon className="me-1" icon={faTrashCan} />Eliminar</>
+                    )}
                   </Button>
                 </td>
               </tr>

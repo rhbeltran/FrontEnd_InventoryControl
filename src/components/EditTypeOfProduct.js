@@ -3,6 +3,9 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useState } from 'react';
 import { Spinner } from 'react-bootstrap';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import Swal from 'sweetalert2';
 
 function EditTypeOfProduct({ show, onHide, editData, handleChange, handleSave }) {
   const [validated, setValidated] = useState(false);
@@ -16,7 +19,15 @@ function EditTypeOfProduct({ show, onHide, editData, handleChange, handleSave })
     }
     setValidated(false);
     setLoading(true);
-    handleSave();
+    try {
+      handleSave();
+    } catch (error) {
+      Swal.fire(
+        '¡Error!',
+        error.response.data.message,
+        'error'
+      );
+    }
     setLoading(false);
   };
 
@@ -48,8 +59,14 @@ function EditTypeOfProduct({ show, onHide, editData, handleChange, handleSave })
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>Close</Button>
-          <Button variant="primary" onClick={handleSaveChanges}>Save changes</Button>
+          <Button variant="secondary" onClick={onHide}>
+            <FontAwesomeIcon className="me-1" icon={faTimes} />
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleSaveChanges}>
+            <FontAwesomeIcon className="me-1" icon={faSave} />
+            Save changes
+          </Button>
         </Modal.Footer>
       </Modal>
       {loading && (

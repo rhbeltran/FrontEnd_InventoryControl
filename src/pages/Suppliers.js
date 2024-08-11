@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import EditSupplier from "../components/EditSupplier";
 import { Spinner } from "react-bootstrap";
 import apiClient from "../helpers/jwtInterceptor";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const urlSuppliers = process.env.REACT_APP_API_URL + '/suppliers';
 const Suppliers = () => {
@@ -26,15 +28,24 @@ const Suppliers = () => {
   const onDelete = (id) => {
     setLoading([...loading, id]);
     const deleteSupplier = async () => {
-      const responseApi = await apiClient.delete(`${urlSuppliers}/${id}`);
-      if (responseApi.data.suppliers) {
-        setLoading(loading.filter((item) => item !== id));
-        setSuppliers(suppliers.filter((item) => item.id !== id));
+      try {
+        const responseApi = await apiClient.delete(`${urlSuppliers}/${id}`);
+        if (responseApi.data.suppliers) {
+          setSuppliers(suppliers.filter((item) => item.id !== id));
+          Swal.fire(
+            '¡Eliminado!',
+            'El Proveedor ha sido eliminado.',
+            'success'
+          )
+        }
+      } catch (error) {
+        console.log(error);
         Swal.fire(
-          '¡Eliminado!',
-          'El Proveedor ha sido eliminado.',
-          'success'
-        )
+          '¡Error!',
+          error.response.data.message,
+          'error' 
+        );
+        setLoading(loading.filter((item) => item !== id));
       }
     }
     Swal.fire({
@@ -49,7 +60,7 @@ const Suppliers = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         deleteSupplier();
-      }else{
+      } else {
         setLoading(loading.filter((item) => item !== id));
       }
     })
@@ -63,7 +74,7 @@ const Suppliers = () => {
     }
     setShowModal(true);
   }
-  const handleSave = async () => new Promise(async (resolve, reject) =>{
+  const handleSave = async () => new Promise(async (resolve, reject) => {
     let supplierExists = suppliers.find((item) => item.id === editData.id);
     if (supplierExists) {
       apiClient.put(`${urlSuppliers}/${editData.id}`, editData)
@@ -117,6 +128,7 @@ const Suppliers = () => {
       </div>
       <div className="col-xl-12 mb-4">
         <Button variant="primary" onClick={() => handleEdit('')}>
+          <FontAwesomeIcon className="me-1" icon={faPlus} />
           Agregar Nuevo Proveedor
         </Button>
       </div>
@@ -125,7 +137,6 @@ const Suppliers = () => {
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Apellido</th>
               <th>Dirección</th>
               <th>Teléfono de Contacto</th>
               <th>Correo</th>
@@ -135,22 +146,28 @@ const Suppliers = () => {
           <tbody>
             {suppliers.map((supplier) => (
               <tr key={supplier.id}>
-                <td>{supplier.firstname}</td>
-                <td>{supplier.lastname}</td>
+                <td>{supplier.name}</td>
                 <td>{supplier.address}</td>
                 <td>{supplier.contactphone}</td>
                 <td>{supplier.email}</td>
                 <td>
-                  <Button variant="warning" className="me-2" onClick={() => handleEdit(supplier.id)}>Editar</Button>
+                  <Button variant="warning" className="me-2" onClick={() => handleEdit(supplier.id)}>
+                    <FontAwesomeIcon className="me-1" icon={faEdit} />
+                    Editar
+                  </Button>
                   <Button variant="danger" onClick={() => onDelete(supplier.id)}>
-                  {loading.includes(supplier.id)?<><Spinner animation="border" size="sm" role="status"/>Eliminando...</>:'Eliminar'}
+                    {loading.includes(supplier.id) ? (
+                      <><Spinner className="me-1" animation="border" size="sm" role="status" />Eliminando...</>
+                    ) : (
+                      <><FontAwesomeIcon className="me-1" icon={faTrashCan} />Eliminar</>
+                    )}
                   </Button>
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
-        <EditSupplier show={showModal} onHide={() => setShowModal(false)} editData={editData} handleChange={handleChange} handleSave={handleSave}/>
+        <EditSupplier show={showModal} onHide={() => setShowModal(false)} editData={editData} handleChange={handleChange} handleSave={handleSave} />
       </div>
     </>
   );

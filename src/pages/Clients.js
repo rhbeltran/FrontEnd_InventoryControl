@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import EditClient from "../components/EditClient";
 import { Spinner } from "react-bootstrap";
 import apiClient from "../helpers/jwtInterceptor";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const urlClients = process.env.REACT_APP_API_URL + '/clients';
 const Clients = () => {
@@ -26,16 +28,26 @@ const Clients = () => {
   const onDelete = (id) => {
     setLoading([...loading, id]);
     const deleteClient = async () => {
-      const responseApi = await apiClient.delete(`${urlClients}/${id}`);
-      if (responseApi.data.clients) {
-        setLoading(loading.filter((item) => item !== id));
-        setClients(clients.filter((item) => item.id !== id));
+      try {
+        const responseApi = await apiClient.delete(`${urlClients}/${id}`);
+        if (responseApi.data.clients) {
+          setClients(clients.filter((item) => item.id !== id));
+          Swal.fire(
+            '¡Eliminado!',
+            'El cliente ha sido eliminado.',
+            'success'
+          )
+        }
+      } catch (error) {
+        console.log(error);
         Swal.fire(
-          '¡Eliminado!',
-          'El cliente ha sido eliminado.',
-          'success'
-        )
+          '¡Error!',
+          error.response.data.message,
+          'error'
+        );
+        setLoading(loading.filter((item) => item !== id));
       }
+
     }
     Swal.fire({
       title: '¿Estás seguro de eliminar el cliente?',
@@ -49,7 +61,7 @@ const Clients = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         deleteClient();
-      }else{
+      } else {
         setLoading(loading.filter((item) => item !== id));
       }
     })
@@ -63,7 +75,7 @@ const Clients = () => {
     }
     setShowModal(true);
   }
-  const handleSave = async () => new Promise(async (resolve, reject) =>{
+  const handleSave = async () => new Promise(async (resolve, reject) => {
     let clientExists = clients.find((item) => item.id === editData.id);
     if (clientExists) {
       apiClient.put(`${urlClients}/${editData.id}`, editData)
@@ -117,6 +129,7 @@ const Clients = () => {
       </div>
       <div className="col-xl-12 mb-4">
         <Button variant="primary" onClick={() => handleEdit('')}>
+          <FontAwesomeIcon className="me-1" icon={faPlus} />
           Agregar Nuevo Cliente
         </Button>
       </div>
@@ -125,7 +138,6 @@ const Clients = () => {
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Apellido</th>
               <th>Dirección</th>
               <th>Teléfono</th>
               <th>Correo</th>
@@ -135,15 +147,21 @@ const Clients = () => {
           <tbody>
             {clients.map((client) => (
               <tr key={client.id}>
-                <td>{client.firstname}</td>
-                <td>{client.lastname}</td>
+                <td>{client.name}</td>
                 <td>{client.address}</td>
                 <td>{client.telephone}</td>
                 <td>{client.email}</td>
                 <td>
-                  <Button variant="warning" className="me-2" onClick={() => handleEdit(client.id)}>Editar</Button>
+                  <Button variant="warning" className="me-2" onClick={() => handleEdit(client.id)}>
+                    <FontAwesomeIcon className="me-1" icon={faEdit} />
+                    Editar
+                  </Button>
                   <Button variant="danger" onClick={() => onDelete(client.id)}>
-                  {loading.includes(client.id)?<><Spinner animation="border" size="sm" role="status"/>Eliminando...</>:'Eliminar'}
+                    {loading.includes(client.id) ? (
+                      <><Spinner className="me-1" animation="border" size="sm" role="status" />Eliminando...</>
+                    ) : (
+                      <><FontAwesomeIcon className="me-1" icon={faTrashCan} />Eliminar</>
+                    )}
                   </Button>
                 </td>
               </tr>

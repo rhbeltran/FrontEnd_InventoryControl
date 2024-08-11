@@ -36,3 +36,14 @@
     transform: rotate(360deg);
   }
 }
+
+.fixed-width-dropdown{/*clase para el dropdown con ancho fijo*/
+  width: 150px;
+}
+
+.fixed-width-dropdown .dropdown-toggle{ /*subclase para el boton del dropdown con ancho fijo*/
+  width: 100%;
+  white-space: nowrap; /*evita que se ajuste el texto*/
+  overflow: hidden; /*oculta el texto que no cabe*/
+  text-overflow: ellipsis; /*muestras puntos suspensivos si el texto es muy largo*/
+}

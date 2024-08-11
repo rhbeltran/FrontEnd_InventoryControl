@@ -3,10 +3,17 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useState } from 'react';
 import { Spinner } from 'react-bootstrap';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import Dropdown from 'react-bootstrap/Dropdown';
+import Swal from 'sweetalert2';
+
 
 function EditUser({ show, onHide, editData, handleChange, handleSave }) {
   const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [roles, setRoles] = useState([{ text: 'Administrador', value: 'admin' }, { text: 'Operador', value: 'operator' }]);
+
 
   const handleSaveChanges = (event) => {
     const form = document.getElementById('ditForm');
@@ -16,7 +23,15 @@ function EditUser({ show, onHide, editData, handleChange, handleSave }) {
     }
     setValidated(false);
     setLoading(true);
-    handleSave();
+    try {
+      handleSave();
+    } catch (error) {
+      Swal.fire(
+        '¡Error!',
+        error.response.data.message,
+        'error'
+      );
+    }
     setLoading(false);
   };
 
@@ -89,19 +104,43 @@ function EditUser({ show, onHide, editData, handleChange, handleSave }) {
                 Por favor ingresa una Contraseña.
               </Form.Control.Feedback>
             </Form.Group>
+            <Form.Group className="mb-3" controlId="formRole">
+              <Form.Label>Rol</Form.Label>
+              <Dropdown>
+                <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                  {editData.role ? roles.find(role => role.value === editData.role).text : 'Seleccionar'}
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {roles.map(role => (
+                    <Dropdown.Item key={role.value} onClick={() => handleChange({ target: { name: "role", value: role.value } })}>
+                      {role.text}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+              <Form.Control.Feedback type="invalid">
+                Por favor ingresa el Rol del Usuario.
+              </Form.Control.Feedback>
+            </Form.Group>
           </Form>
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>Close</Button>
-          <Button variant="primary" onClick={handleSaveChanges}>Save changes</Button>
+          <Button variant="secondary" onClick={onHide}>
+            <FontAwesomeIcon className="me-1" icon={faTimes} />
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleSaveChanges}>
+            <FontAwesomeIcon className="me-1" icon={faSave} />
+            Save changes
+          </Button>
         </Modal.Footer>
       </Modal>
       {loading && (
         <div className="loading">
-        <Spinner animation="border" role="status" size="lg">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
+          <Spinner animation="border" role="status" size="lg">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
         </div>
       )}
     </div>

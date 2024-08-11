@@ -4,6 +4,9 @@ import Form from 'react-bootstrap/Form';
 import { useEffect, useState } from 'react';
 import { Dropdown, Spinner } from 'react-bootstrap';
 import apiClient from '../helpers/jwtInterceptor';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import Swal from 'sweetalert2';
 
 const urlTypeOfProducts = process.env.REACT_APP_API_URL + '/typesOfProducts';
 
@@ -30,7 +33,15 @@ function EditProduct({ show, onHide, editData, handleChange, handleSave }) {
     }
     setValidated(false);
     setLoading(true);
-    await handleSave();
+    try {
+      await handleSave();
+    } catch (error) {
+      Swal.fire(
+        '¡Error!',
+        error.response.data.message,
+        'error'
+      );
+    }
     setLoading(false);
   };
 
@@ -65,11 +76,11 @@ function EditProduct({ show, onHide, editData, handleChange, handleSave }) {
               <Form.Label>Descripción</Form.Label>
               <Form.Control type="text" placeholder="Descripción" name="description" value={editData.description} onChange={handleChange} required />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formStock">
-              <Form.Label>Stock</Form.Label>
-              <Form.Control type="text" placeholder="Stock" name="stock" value={editData.stock} onChange={handleChange} required />
+            <Form.Group className="mb-3" controlId="formUnitMeasurement">
+              <Form.Label>Unidad de Medida</Form.Label>
+              <Form.Control type="text" placeholder="Unitmeasurement" name="unitmeasurement" value={editData.unitmeasurement} onChange={handleChange} required />
               <Form.Control.Feedback type="invalid">
-                Por favor ingresa el Stock.
+                Por favor ingresa la Unidad de Medida.
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formStock">
@@ -94,8 +105,14 @@ function EditProduct({ show, onHide, editData, handleChange, handleSave }) {
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>Close</Button>
-          <Button variant="primary" onClick={handleSaveChanges}>Save changes</Button>
+          <Button variant="secondary" onClick={onHide}>
+            <FontAwesomeIcon className="me-1" icon={faTimes} />
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleSaveChanges}>
+            <FontAwesomeIcon className="me-1" icon={faSave} />
+            Save changes
+          </Button>
         </Modal.Footer>
       </Modal>
       {loading && (
